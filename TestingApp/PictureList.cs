@@ -13,6 +13,7 @@ namespace TestingApp
     /// </summary>
     class PictureList
     {
+        private int _currentIndex;
         private string directory;
         private BitmapImage[] pictureList = null;
         public int Size { get; private set; }
@@ -20,10 +21,13 @@ namespace TestingApp
         /// <summary>
         /// Currend index in the list of images.
         /// </summary>
-        public int CurrentIndex { get;
-            set {
+        public int CurrentIndex
+        {
+            get { return _currentIndex; }
+            set
+            {
                 if (value >= 0 && value < pictureList.Length)
-                    CurrentIndex = value;
+                    _currentIndex = value;
             }
         }
 
@@ -33,16 +37,20 @@ namespace TestingApp
         /// <param name="directory">Path to the pictures directory</param>
         public PictureList(string directory)
         {
+            _currentIndex = 0;
             this.directory = directory;
             string[] files = System.IO.Directory.GetFiles(directory, "*.jpg");
             Size = files.Length;
             pictureList = new BitmapImage[Size];
 
-            Parallel.For(0, Size, 
-                i => {
-                    pictureList[i] = new BitmapImage( new Uri(files[i]) ); 
-                }
-            );
+            //Parallel.For(0, Size, 
+            //    i => {
+            //        pictureList[i] = new BitmapImage( new Uri(files[i]) ); 
+            //    }
+            //);
+
+            for (int i = 0; i < Size; ++i )
+                pictureList[i] = new BitmapImage(new Uri(files[i])); 
 
             CurrentIndex = 0;       
         }
@@ -50,7 +58,7 @@ namespace TestingApp
         /// <summary>
         /// Returns the image at the current index value on the list.
         /// </summary>
-        /// <returns>BitmapImage image</returns>
+        /// <returns>BitmapImage</returns>
         public BitmapImage CurrentImage()
         {
             return pictureList[CurrentIndex];
@@ -60,7 +68,7 @@ namespace TestingApp
         /// Returns the image in the position index of the list. 
         /// </summary>
         /// <param name="index">Index of the required image</param>
-        /// <returns>BitmapImage image</returns>
+        /// <returns>BitmapImage</returns>
         public BitmapImage GetImage(int index)
         {
             if( index >= 0 && index < pictureList.Length)
@@ -86,7 +94,7 @@ namespace TestingApp
         /// <summary>
         /// Return the previous image on the list. If the current image is the first one, then the last is returned.
         /// </summary>
-        /// <returns>BitmapImage image</returns>
+        /// <returns>BitmapImage</returns>
         public BitmapImage Prev()
         {
             if (CurrentIndex - 1 <= 0)

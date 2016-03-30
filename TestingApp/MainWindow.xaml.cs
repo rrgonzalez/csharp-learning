@@ -27,6 +27,7 @@ namespace TestingApp
         private BitmapSource targetImage;
         private PictureList targetSeries = null;
         private PictureList objectSeries = null;
+        private PictureList playingSeries = null;
 
         public MainWindow()
         {
@@ -72,15 +73,28 @@ namespace TestingApp
             FolderBrowserDialog folderBrowserDlg = new FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = folderBrowserDlg.ShowDialog();
 
-            if (result == System.Windows.Forms.DialogResult.OK )
+            if (result != System.Windows.Forms.DialogResult.OK )
             {
-                targetSeries = new PictureList(folderBrowserDlg.SelectedPath);                
+                return;             
             }
+
+            targetSeries = new PictureList(folderBrowserDlg.SelectedPath);  
+            playingSeries = targetSeries;
+
+            scrollPlayingSeries.Value = 0;
+            imageRender.Source = playingSeries.CurrentImage();
+            scrollPlayingSeries.Maximum = playingSeries.Size - 1;
         }
 
         private void buttonLoadObjectSeries_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void scrollPlayingSeries_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            playingSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            imageRender.Source = playingSeries.CurrentImage();
         }
     }
 }
