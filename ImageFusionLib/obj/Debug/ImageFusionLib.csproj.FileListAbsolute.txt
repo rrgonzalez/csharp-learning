@@ -1,0 +1,5 @@
+E:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\ImageFusionLib.csprojResolveAssemblyReference.cache
+E:\iThesis\Code\ImageFusionLib\ImageFusionLib\bin\Debug\ImageFusionLib.dll
+E:\iThesis\Code\ImageFusionLib\ImageFusionLib\bin\Debug\ImageFusionLib.pdb
+E:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\ImageFusionLib.dll
+E:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\ImageFusionLib.pdb

@@ -1,0 +1,15 @@
+D:\iThesis\Code\ImageFusionLib\TestingApp\bin\Debug\TestingApp.exe.config
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.csprojResolveAssemblyReference.cache
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\MainWindow.baml
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\MainWindow.g.cs
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\App.g.cs
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp_MarkupCompile.cache
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.g.resources
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.Properties.Resources.resources
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.csproj.GenerateResource.Cache
+D:\iThesis\Code\ImageFusionLib\TestingApp\bin\Debug\TestingApp.exe
+D:\iThesis\Code\ImageFusionLib\TestingApp\bin\Debug\TestingApp.pdb
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.exe
+D:\iThesis\Code\ImageFusionLib\TestingApp\obj\Debug\TestingApp.pdb
+D:\iThesis\Code\ImageFusionLib\TestingApp\bin\Debug\ImageFusionLib.dll
+D:\iThesis\Code\ImageFusionLib\TestingApp\bin\Debug\ImageFusionLib.pdb
