@@ -34,29 +34,6 @@ namespace TestingApp
             InitializeComponent();
         }
 
-        private void buttonOpenImg_Click(object sender, RoutedEventArgs e)
-        {
-            
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.DefaultExt = ".jpg";
-            dlg.Filter = "JPG Files (*.jpg)|*.jpg";
-            Nullable<bool> result = dlg.ShowDialog();
-
-            if (result == true)
-            {
-                BitmapSource tempBitmap = new BitmapImage(new Uri(dlg.FileName));
-
-                if ((((int)tempBitmap.Width & ((int)tempBitmap.Width - 1)) != 0) ||
-                     (((int)tempBitmap.Height & ((int)tempBitmap.Height - 1)) != 0))
-                {
-                    System.Windows.MessageBox.Show(this, "Image dimensions must be power of 2", "Error!");
-                    return;
-                }
-
-                imageRender.Source = this.targetImage = new BitmapImage(new Uri(dlg.FileName));
-            }
-        }
-
         private void buttonApplyDWT_Click(object sender, RoutedEventArgs e)
         {
             WaveletFusionLib.WaveletFusion.FusionImages(targetImage, targetImage);
@@ -88,7 +65,20 @@ namespace TestingApp
 
         private void buttonLoadObjectSeries_Click(object sender, RoutedEventArgs e)
         {
+            FolderBrowserDialog folderBrowserDlg = new FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = folderBrowserDlg.ShowDialog();
 
+            if (result != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            objectSeries = new PictureList(folderBrowserDlg.SelectedPath);
+            playingSeries = objectSeries;
+
+            scrollPlayingSeries.Value = 0;
+            imageRender.Source = playingSeries.CurrentImage();
+            scrollPlayingSeries.Maximum = playingSeries.Size - 1;
         }
 
         private void scrollPlayingSeries_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
