@@ -24,7 +24,7 @@ namespace TestingApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BitmapSource targetImage;
+        //private BitmapSource targetImage;
         private PictureList targetSeries = null;
         private PictureList objectSeries = null;
         private PictureList playingSeries = null;
@@ -36,8 +36,8 @@ namespace TestingApp
 
         private void buttonApplyDWT_Click(object sender, RoutedEventArgs e)
         {
-            WaveletFusionLib.WaveletFusion.FusionImages(targetImage, targetImage);
-            imageRender.Source = WaveletFusionLib.WaveletFusion.targetImage;
+            //WaveletFusionLib.WaveletFusion.FusionImages(targetImage, targetImage);
+            //imageRender.Source = WaveletFusionLib.WaveletFusion.targetImage;
         }
 
         private void buttonApplyIDWT_Click(object sender, RoutedEventArgs e)
