@@ -31,6 +31,14 @@ namespace TestingApp
             }
         }
 
+        public PictureList(BitmapImage[] pictureList)
+        {
+            this.pictureList = pictureList;
+            Size = pictureList.Length;
+            _currentIndex = 0;
+            CurrentIndex = 0;
+        }
+
         /// <summary>
         /// Constructs a new Picture List.
         /// </summary>
@@ -78,21 +86,23 @@ namespace TestingApp
         }
 
         /// <summary>
-        /// Return the next image on the list. If the current image is the last one, then the first is returned.
+        /// Return the current image on the list and the reference goes to the next. If the current image is the last one, then the first is referenced.
         /// </summary>
         /// <returns>BitmapImage image</returns>
         public BitmapImage Next()
         {
+            BitmapImage aux = pictureList[CurrentIndex];
+
             if (CurrentIndex + 1 >= pictureList.Length)
                 CurrentIndex = 0;
             else
                 ++CurrentIndex;
             
-            return pictureList[CurrentIndex];
+            return aux;
         }
 
         /// <summary>
-        /// Return the previous image on the list. If the current image is the first one, then the last is returned.
+        /// Return the current image on the list and the reference goes to the previuos. If the current image is the first one, then the last is referenced.
         /// </summary>
         /// <returns>BitmapImage</returns>
         public BitmapImage Prev()

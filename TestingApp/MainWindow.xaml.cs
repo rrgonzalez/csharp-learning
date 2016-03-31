@@ -27,6 +27,7 @@ namespace TestingApp
         //private BitmapSource targetImage;
         private PictureList targetSeries = null;
         private PictureList objectSeries = null;
+        private PictureList resultSeries = null;
         private PictureList playingSeries = null;
 
         public MainWindow()
@@ -85,6 +86,42 @@ namespace TestingApp
         {
             playingSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
             imageRender.Source = playingSeries.CurrentImage();
+        }
+
+        private void buttonFuse_Click(object sender, RoutedEventArgs e)
+        {
+            if (targetSeries == null || objectSeries == null || targetSeries.Size != objectSeries.Size )
+                return;
+
+            int N = targetSeries.Size;
+            BitmapSource aux;
+            BitmapImage[] bmpArray = new BitmapImage[N];
+            for (int i = 0; i < N; ++i)
+            {
+                aux = WaveletFusionLib.WaveletFusion.FusionImages(targetSeries.Next(), objectSeries.Next());
+                bmpArray[i] = ConvertBitmapSourceToBitmapImage(aux);
+            }
+
+            playingSeries = resultSeries = new PictureList(bmpArray);
+        }
+
+        private BitmapImage ConvertBitmapSourceToBitmapImage(BitmapSource bitmapSource)
+        {
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            MemoryStream memoryStream = new MemoryStream();
+            BitmapImage bImg = new BitmapImage();
+
+            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+            encoder.Save(memoryStream);
+
+            memoryStream.Position = 0;
+            bImg.BeginInit();
+            bImg.StreamSource = memoryStream;
+            bImg.EndInit();
+
+            memoryStream.Close();
+
+            return bImg;
         }
     }
 }

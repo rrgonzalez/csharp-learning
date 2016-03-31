@@ -71,10 +71,10 @@ namespace ImageFusionLib.MathMethods
         /// <param name="endRow">End row to fuse (exclusive)</param>
         /// <param name="endCol">End col to fuse (exclusive)</param>
         /// <returns>double[,]</returns>
-        public static double[,] Fusion(double[,] data1, double[,] data2, 
+        public static double[,] Fusion(double[,] data1, double[,] data2, int rows, int cols,
                                         int startRow, int startCol, int endRow, int endCol)
         {
-            double[,] result = new double[endRow - startRow, endCol - startCol];
+            double[,] result = new double[rows, cols];
             int neighboors, x, y;
             double sum, w;
 

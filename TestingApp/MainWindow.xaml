@@ -18,14 +18,14 @@
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Button Content="Load Serie 1" Name="buttonLoadSerie1" Height="25" Width="100" Margin="5" Click="buttonLoadTargetSeries_Click" />
             <Button Content="Load Serie 2" Name="buttonLoadSerie2" Height="25" Width="100" Margin="5" Click="buttonLoadObjectSeries_Click" />
-            <Button Content="Apply DWT" Name="buttonApplyDWT" Height="25" Width="85" Margin="5" Click="buttonApplyDWT_Click" />
-            <Button Content="Apply Inverse DWT" Name="buttonApplyIDWT" Height="25" Width="125" Margin="5" Click="buttonApplyIDWT_Click" />
+            <Button Content="Fuse" Name="buttonFuse" Height="25" Width="85" Margin="5" Click="buttonFuse_Click" />
+            
         </StackPanel>
 
         <Image Grid.Row="1" Margin="10" Name="imageRender"/>
 
         
-        <Rectangle Grid.Row="1" Grid.Column="1" Fill="DarkSalmon"></Rectangle>        
+        <Rectangle Grid.Row="1" Grid.Column="1" Fill="DarkGray"></Rectangle>        
         <StackPanel VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
             <ScrollBar Orientation="Vertical" SmallChange="1" Minimum="0" Height="400" Name="scrollPlayingSeries" ValueChanged="scrollPlayingSeries_ValueChanged"></ScrollBar>            
         </StackPanel>
