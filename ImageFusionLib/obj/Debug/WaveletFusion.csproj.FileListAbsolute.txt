@@ -7,3 +7,5 @@ D:\iThesis\Code\ImageFusionLib\ImageFusionLib\bin\Debug\ImageFusionLib.pdb
 D:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\WaveletFusion.csprojResolveAssemblyReference.cache
 D:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\ImageFusionLib.dll
 D:\iThesis\Code\ImageFusionLib\ImageFusionLib\obj\Debug\ImageFusionLib.pdb
+D:\iThesis\Code\ImageFusionLib\ImageFusionLib\bin\Debug\ImageFusionLib.dll.CodeAnalysisLog.xml
+D:\iThesis\Code\ImageFusionLib\ImageFusionLib\bin\Debug\ImageFusionLib.dll.lastcodeanalysissucceeded

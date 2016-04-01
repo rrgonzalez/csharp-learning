@@ -28,7 +28,7 @@ namespace TestingApp
         private PictureList targetSeries = null;
         private PictureList objectSeries = null;
         private PictureList resultSeries = null;
-        private PictureList playingSeries = null;
+        //private PictureList playingSeries = null;
 
         public MainWindow()
         {
@@ -57,11 +57,15 @@ namespace TestingApp
             }
 
             targetSeries = new PictureList(folderBrowserDlg.SelectedPath);  
-            playingSeries = targetSeries;
+            //playingSeries = targetSeries;
 
-            scrollPlayingSeries.Value = 0;
-            imageRender.Source = playingSeries.CurrentImage();
-            scrollPlayingSeries.Maximum = playingSeries.Size - 1;
+            if (scrollPlayingSeries.Value != 0)
+                targetSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            else
+                scrollPlayingSeries.Value = 0;
+
+            imageRender.Source = targetSeries.CurrentImage();
+            scrollPlayingSeries.Maximum = targetSeries.Size - 1;
         }
 
         private void buttonLoadObjectSeries_Click(object sender, RoutedEventArgs e)
@@ -75,17 +79,23 @@ namespace TestingApp
             }
 
             objectSeries = new PictureList(folderBrowserDlg.SelectedPath);
-            playingSeries = objectSeries;
+            //playingSeries = objectSeries;
 
-            scrollPlayingSeries.Value = 0;
-            imageRender.Source = playingSeries.CurrentImage();
-            scrollPlayingSeries.Maximum = playingSeries.Size - 1;
+            if (scrollPlayingSeries.Value != 0)
+                objectSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            else
+                scrollPlayingSeries.Value = 0;
+
+            imageRenderObject.Source = objectSeries.CurrentImage();
+            scrollPlayingSeries.Maximum = objectSeries.Size - 1;
         }
 
         private void scrollPlayingSeries_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            playingSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
-            imageRender.Source = playingSeries.CurrentImage();
+            targetSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            objectSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            imageRender.Source = targetSeries.CurrentImage();
+            imageRenderObject.Source = objectSeries.CurrentImage();
         }
 
         private void buttonFuse_Click(object sender, RoutedEventArgs e)
@@ -95,14 +105,18 @@ namespace TestingApp
 
             int N = targetSeries.Size;
             BitmapSource aux;
-            BitmapImage[] bmpArray = new BitmapImage[N];
-            for (int i = 0; i < N; ++i)
-            {
-                aux = WaveletFusionLib.WaveletFusion.FusionImages(targetSeries.Next(), objectSeries.Next());
-                bmpArray[i] = ConvertBitmapSourceToBitmapImage(aux);
-            }
+            //BitmapSource[] bmpArray = new BitmapSource[N];
+            //for (int i = 0; i < N; ++i)
+            //{
+            //    aux = WaveletFusionLib.WaveletFusion.FusionImages(targetSeries.Next(), objectSeries.Next());
+            //    //bmpArray[i] = ConvertBitmapSourceToBitmapImage(aux);
+            //    bmpArray[i] = aux;
+            //}
 
-            playingSeries = resultSeries = new PictureList(bmpArray);
+            aux = WaveletFusionLib.WaveletFusion.FusionImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+            imageRender.Source = aux;
+
+            //playingSeries = resultSeries = new PictureList(bmpArray);
         }
 
         private BitmapImage ConvertBitmapSourceToBitmapImage(BitmapSource bitmapSource)

@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WaveletFusion.Helpers.ImageBlend" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAgAEACEAAAAAAAAABEEAAAAYABECAAAAABAAAAAA=</HashCode>
+      <FileName>Helpers\ImageBlend.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveletFusion.Helpers.BitmapSourceExtensions" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QQAIACAAAAwIQAgQCAAQAgEAAAoAIAgAEAEAAAAAAAQ=</HashCode>
+      <FileName>Helpers\ImageProcessing.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveletFusion.Helpers.ImagePtr" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIDAAAABCClEAAAAAAkAmQAIhgAARAMAAEIAAAAAVA=</HashCode>
+      <FileName>Helpers\ImagePtr.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="WaveletFusion.Helpers.ImagePtrExtensions" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAAAAAQQAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Helpers\ImagePtr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveletFusion.Helpers.MemoryManager" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAEBAAAAgEBAAAABRAAAAAhAAAAACAAAAAAAQACAAQI=</HashCode>
+      <FileName>Helpers\MemoryManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveletFusion.Helpers.Utils" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Helpers\Utils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ImageFusionLib.MathMethods.DiscreteWaveletTransform" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAIgAAAAAQAQAAEAAIAA=</HashCode>
+      <FileName>MathMethods\DiscreteWaveletTransform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ImageFusionLib.MathMethods.GaussianMeanFusion" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAACAAAAAAAEAAAAAAAAI=</HashCode>
+      <FileName>MathMethods\GaussianMeanFusion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WaveletFusionLib.WaveletFusion" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAABAAAAAAAAAAQAIAAAAEAAAAAAAAAIAACAAAAA=</HashCode>
+      <FileName>WaveletFusion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="WaveletFusion.Helpers.Bgr32" Collapsed="true">
+    <Position X="0.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAQAEAAAAAAAAAAAAAAAAACAGAAQA=</HashCode>
+      <FileName>Helpers\ImageProcessing.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="WaveletFusion.Helpers.BlendOperation" Collapsed="true">
+    <Position X="0.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAEEAEAAIAATSQCQAABEAkEAAAAAAAAAAAAAAASAA=</HashCode>
+      <FileName>Helpers\ImageBlend.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

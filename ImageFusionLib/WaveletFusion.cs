@@ -22,10 +22,10 @@ namespace WaveletFusionLib
             //ApplyCoregister();
 
             targetImage = ApplyWaveletTransform(targetImage, true);
-            resultImage = targetImage;
-            //objectImage = ApplyWaveletTransform(objectImage, true);
+            //resultImage = targetImage;
+            objectImage = ApplyWaveletTransform(objectImage, true);
 
-            //resultImage = ApplyCoefficientFusion(targetImage, objectImage);
+            resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
             //resultImage = ApplyWaveletTransform(resultImage, false);
 
@@ -45,61 +45,44 @@ namespace WaveletFusionLib
         /// <param name="forward">true to apply the Wavelet transform, false to apply the Inverse Wavelet Transform.</param>
         public static unsafe BitmapSource ApplyWaveletTransform(BitmapSource bitmap, bool forward)
         {
-            var imgPtr = ImagePtr.FromBitmap(bitmap);
+            ImagePtr imgPtr = ImagePtr.FromBitmap(bitmap);
             byte* data = (byte*)imgPtr.Data.ToPointer();
+
             int width = imgPtr.Width;
             int height = imgPtr.Height;
 
-            //double[,] red = new double[width, height];
-            //double[,] green = new double[width, height];
-            //double[,] blue = new double[width, height];
-            double[,] extra = new double[width, height];
+            //for (int i = 0; i < height; ++i)
+            //{
+            //    for (int j = 0; j < width; ++j)
+            //    {
+            //        data[i * width + j] = ((byte)(255 - data[i * width + j]));
+            //    }
+            //}
 
-            byte pixel;
+            double[,] pixels = new double[height, width];
 
-            for (int j = 0; j < height; j++)
+            for (int i = 0; i < height; i++)
             {
-                for (int i = 0; i < width; i++)
+                for (int j = 0; j < width; j++)
                 {
-                    pixel = data[j * width + i];
-                    //red[i, j] = (double)pixel.R;
-                    //green[i, j] = (double)pixel.G;
-                    //blue[i, j] = (double)pixel.B;
-                    //extra[i, j] = (double)pixel.S;
-                    //red[i, j] = (double)Utils.Normalize(0, 255, -1, 1, pixel.R);
-                    //green[i, j] = (double)Utils.Normalize(0, 255, -1, 1, pixel.G);
-                    //blue[i, j] = (double)Utils.Normalize(0, 255, -1, 1, pixel.B);
-                    extra[i, j] = (double)Utils.Normalize(0, 255, -1, 1, pixel);
+                    pixels[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j]);
                 }
             }
 
             if (forward)
             {
-                //DiscreteWaveletTransform.WaveletTransform(red);
-                //DiscreteWaveletTransform.WaveletTransform(green);
-                //DiscreteWaveletTransform.WaveletTransform(blue);
-                DiscreteWaveletTransform.WaveletTransform(extra);
+                DiscreteWaveletTransform.WaveletTransform(pixels);
             }
             else
             {
-                //DiscreteWaveletTransform.InverseWaveletTransform(red);
-                //DiscreteWaveletTransform.InverseWaveletTransform(green);
-                //DiscreteWaveletTransform.InverseWaveletTransform(blue);
-                DiscreteWaveletTransform.InverseWaveletTransform(extra);
+                DiscreteWaveletTransform.InverseWaveletTransform(pixels);
             }
 
-            for (int j = 0; j < height; j++)
+            for (int i = 0; i < height; i++)
             {
-                for (int i = 0; i < width; i++)
+                for (int j = 0; j < width; j++)
                 {
-                    //data[i * width + j].R = (byte)red[i, j];
-                    //data[i * width + j].G = (byte)green[i, j];
-                    //data[i * width + j].B = (byte)blue[i, j];
-                    //data[i * width + j].S = (byte)extra[i, j];
-                    //data[i * width + j].R = (byte)Utils.Normalize(-1, 1, 0, 255, red[i, j]);
-                    //data[i * width + j].G = (byte)Utils.Normalize(-1, 1, 0, 255, green[i, j]);
-                    //data[i * width + j].B = (byte)Utils.Normalize(-1, 1, 0, 255, blue[i, j]);
-                    data[j * width + i] = (byte)Utils.Normalize(-1, 1, 0, 255, extra[i, j]);
+                    data[i * width + j] = (byte)Utils.Normalize(-1, 1, 0, 255, pixels[i, j]);
                 }
             }
 

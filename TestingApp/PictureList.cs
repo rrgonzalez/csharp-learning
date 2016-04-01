@@ -15,7 +15,7 @@ namespace TestingApp
     {
         private int _currentIndex;
         private string directory;
-        private BitmapImage[] pictureList = null;
+        private BitmapSource[] pictureList = null;
         public int Size { get; private set; }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace TestingApp
             }
         }
 
-        public PictureList(BitmapImage[] pictureList)
+        public PictureList(BitmapSource[] pictureList)
         {
             this.pictureList = pictureList;
             Size = pictureList.Length;
@@ -49,7 +49,7 @@ namespace TestingApp
             this.directory = directory;
             string[] files = System.IO.Directory.GetFiles(directory, "*.jpg");
             Size = files.Length;
-            pictureList = new BitmapImage[Size];
+            pictureList = new BitmapSource[Size];
 
             //Parallel.For(0, Size, 
             //    i => {
@@ -66,8 +66,8 @@ namespace TestingApp
         /// <summary>
         /// Returns the image at the current index value on the list.
         /// </summary>
-        /// <returns>BitmapImage</returns>
-        public BitmapImage CurrentImage()
+        /// <returns>BitmapSource</returns>
+        public BitmapSource CurrentImage()
         {
             return pictureList[CurrentIndex];
         }
@@ -76,8 +76,8 @@ namespace TestingApp
         /// Returns the image in the position index of the list. 
         /// </summary>
         /// <param name="index">Index of the required image</param>
-        /// <returns>BitmapImage</returns>
-        public BitmapImage GetImage(int index)
+        /// <returns>BitmapSource</returns>
+        public BitmapSource GetImage(int index)
         {
             if( index >= 0 && index < pictureList.Length)
                 return pictureList[index];
@@ -88,10 +88,10 @@ namespace TestingApp
         /// <summary>
         /// Return the current image on the list and the reference goes to the next. If the current image is the last one, then the first is referenced.
         /// </summary>
-        /// <returns>BitmapImage image</returns>
-        public BitmapImage Next()
+        /// <returns>BitmapSource</returns>
+        public BitmapSource Next()
         {
-            BitmapImage aux = pictureList[CurrentIndex];
+            BitmapSource aux = pictureList[CurrentIndex];
 
             if (CurrentIndex + 1 >= pictureList.Length)
                 CurrentIndex = 0;
@@ -104,8 +104,8 @@ namespace TestingApp
         /// <summary>
         /// Return the current image on the list and the reference goes to the previuos. If the current image is the first one, then the last is referenced.
         /// </summary>
-        /// <returns>BitmapImage</returns>
-        public BitmapImage Prev()
+        /// <returns>BitmapSource</returns>
+        public BitmapSource Prev()
         {
             if (CurrentIndex - 1 <= 0)
                 CurrentIndex = pictureList.Length - 1;
