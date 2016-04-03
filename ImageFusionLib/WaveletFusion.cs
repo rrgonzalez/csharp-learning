@@ -11,21 +11,38 @@ namespace WaveletFusionLib
 {
     public static class WaveletFusion
     {
-        public static BitmapSource targetImage { get; set; }
-        public static BitmapSource objectImage { get; set; }
-        public static BitmapSource resultImage { get; set; }
+        private static BitmapSource targetImage;
+        private static BitmapSource objectImage;
+        private static BitmapSource resultImage;
 
         public static BitmapSource FusionImages(BitmapSource pTargetImage, BitmapSource pObjectImage) {
             targetImage = pTargetImage;
             objectImage = pObjectImage;
+            bool swapped = false;
 
-            //ApplyCoregister();
+            if (targetImage.Width < objectImage.Width)
+            {
+                swapped = true;
+                BitmapSource temp = targetImage;
+                targetImage = objectImage;
+                objectImage = temp;
+            }
+
+            ApplyCoregister(ref targetImage, ref objectImage);
+
+            if (swapped)
+            {
+                BitmapSource temp = targetImage;
+                targetImage = objectImage;
+                objectImage = temp;
+            }
 
             targetImage = ApplyWaveletTransform(targetImage, true);
             //resultImage = targetImage;
             objectImage = ApplyWaveletTransform(objectImage, true);
+            resultImage = objectImage;
 
-            resultImage = ApplyCoefficientFusion(targetImage, objectImage);
+            //resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
             //resultImage = ApplyWaveletTransform(resultImage, false);
 
@@ -36,7 +53,14 @@ namespace WaveletFusionLib
         /// Coregister the target and object image attributes of the class. 
         /// The transformations are applied directly to the objectImage attribute. 
         /// </summary>
-        public static unsafe void ApplyCoregister() {
+        private static void ApplyCoregister(ref BitmapSource targetImage, ref BitmapSource objectImage)
+        {
+            double xFactor = targetImage.PixelWidth / objectImage.PixelWidth;
+            double yFactor = targetImage.PixelHeight / objectImage.PixelHeight;
+
+            ImagePtr image = ImagePtr.FromBitmap(objectImage);
+            image = image.Scale(xFactor, yFactor, ScaleMode.HighQuality);
+            objectImage = image.ToBitmapSource();
         }
 
         /// <summary>

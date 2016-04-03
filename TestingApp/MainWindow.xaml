@@ -32,7 +32,5 @@
         </StackPanel>
 
         <Image Grid.Row="1" Grid.Column="2" Margin="10" Name="imageRenderObject"/>
-
-
     </Grid>
 </Window>
