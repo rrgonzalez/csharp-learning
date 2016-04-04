@@ -30,5 +30,34 @@ namespace WaveletFusion.Helpers
 
             return value;
         }
+
+        /// <summary>
+        /// Fast way to fill an array with a single value.
+        /// </summary>
+        /// <param name="arr">A pointer to the array to fill</param>
+        /// <param name="value">Value to fill with</param>
+        /// <param name="arrLength">Length of the array</param>
+        /// <returns>byte[]</returns>
+        public static unsafe void UnsafeFill(byte* arr, byte value, int arrLength)
+        {
+            Int64 fillValue = BitConverter.ToInt64(new[] { value, value, value, value, value, value, value, value }, 0);
+            Int64* src = &fillValue;
+
+            var dest = (Int64*)arr;
+            while (arrLength >= 8)
+            {
+                *dest = *src;
+                dest++;
+                arrLength -= 8;
+            }
+
+            var bDest = (byte*)dest;
+            for (byte i = 0; i < arrLength; i++)
+            {
+                *bDest = value;
+                bDest++;
+            }
+            
+        }
     }
 }

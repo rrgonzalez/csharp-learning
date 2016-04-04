@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using WaveletFusion.Helpers;
 using ImageFusionLib.MathMethods;
+
+using WaveletFusion.Helpers;
 
 namespace WaveletFusionLib
 {
@@ -40,11 +43,11 @@ namespace WaveletFusionLib
             targetImage = ApplyWaveletTransform(targetImage, true);
             //resultImage = targetImage;
             objectImage = ApplyWaveletTransform(objectImage, true);
-            resultImage = objectImage;
+            //resultImage = objectImage;
 
-            //resultImage = ApplyCoefficientFusion(targetImage, objectImage);
+            resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
-            //resultImage = ApplyWaveletTransform(resultImage, false);
+            resultImage = ApplyWaveletTransform(resultImage, false);
 
             return resultImage;
         }
@@ -53,13 +56,37 @@ namespace WaveletFusionLib
         /// Coregister the target and object image attributes of the class. 
         /// The transformations are applied directly to the objectImage attribute. 
         /// </summary>
-        private static void ApplyCoregister(ref BitmapSource targetImage, ref BitmapSource objectImage)
+        private static unsafe void ApplyCoregister(ref BitmapSource targetImage, ref BitmapSource objectImage)
         {
             double xFactor = targetImage.PixelWidth / objectImage.PixelWidth;
             double yFactor = targetImage.PixelHeight / objectImage.PixelHeight;
 
+            bool flag = false;
+            if( xFactor == 4 ) {
+                xFactor /= 2;
+                yFactor /= 2;
+                flag = true;
+            }
+
             ImagePtr image = ImagePtr.FromBitmap(objectImage);
             image = image.Scale(xFactor, yFactor, ScaleMode.HighQuality);
+
+            if( flag ) {
+                byte* data = (byte*)image.Data.ToPointer();
+                ImagePtr result = new ImagePtr(2 * image.Height, 2 * image.Width, PixelFormats.Gray8);
+                byte* resData = (byte*)result.Data.ToPointer();
+                byte val = data[0];
+
+                Utils.UnsafeFill(resData, val, result.DataSize);
+
+                for (int i = 0, x = 128; i < image.Height; ++i, ++x)
+                    for (int j = 0, y = 128; j < image.Width; ++j, ++y)
+                        resData[x * result.Width + y] = data[i * image.Width + j];
+
+                objectImage = result.ToBitmapSource();
+                return ;
+            }
+
             objectImage = image.ToBitmapSource();
         }
 
@@ -131,38 +158,38 @@ namespace WaveletFusionLib
             double[,] bmp2 = new double[width, height];
             double[,] result = new double[width, height];
             
-            for (int i = 0; i < width; ++i)
+            for (int i = 0; i < height; ++i)
             {
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
-                    bmp1[i, j] = *(data1 + (i * width + j));
-                    bmp2[i, j] = *(data2 + (i * width + j));
+                    bmp1[i, j] = data1[i * width + j];
+                    bmp2[i, j] = data2[i * width + j];
                 }
             }
 
             // upper right quarter
-            result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, 0, (width >> 1 - 1), (height >> 1 - 1), width);
+           // result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, 0, (width >> 1 - 1), (height >> 1 - 1), width);
             
             // down half
-            result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, (height >> 1), (width >> 1 - 1), (height >> 1 - 1), width);
+            // result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, (height >> 1), (width >> 1 - 1), (height >> 1 - 1), width);
 
-            int rowLimit = height >> 1;
-            int colLimit = width >> 1;
-            for (int i = 0; i < rowLimit; ++i)
+           // int rowLimit = height >> 1;
+            //int colLimit = width >> 1;
+            for (int i = 0; i < height; ++i)
             {
-                for (int j = 0; j < colLimit; ++j)
+                for (int j = 0; j < width; ++j)
                 {
                     result[i,j] = ( bmp1[i, j] + bmp2[i,j] ) / 2;
                 }
             }
 
-            ImagePtr res = new ImagePtr(width, height, false);
+            ImagePtr res = new ImagePtr(width, height, PixelFormats.Gray8);            
             byte* resData = (byte*)res.Data.ToPointer();
-            for (int i = 0; i < width; ++i)
+            for (int i = 0; i < height; ++i)
             {
-                for (int j = 0; j < height; ++j)
+                for (int j = 0; j < width; ++j)
                 {
-                    *(resData + (i * width + j)) = (byte)result[i, j];
+                    resData[i * width + j] = (byte)result[i, j];
                 }
             }
 
