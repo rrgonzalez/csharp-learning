@@ -154,9 +154,9 @@ namespace WaveletFusionLib
             var imgPtr2 = ImagePtr.FromBitmap(bitmap2);
             byte* data2 = (byte*)imgPtr2.Data.ToPointer();
 
-            double[,] bmp1 = new double[width, height];
-            double[,] bmp2 = new double[width, height];
-            double[,] result = new double[width, height];
+            double[,] bmp1 = new double[height, width];
+            double[,] bmp2 = new double[height, width];
+            double[,] result = new double[height, width];
             
             for (int i = 0; i < height; ++i)
             {
@@ -167,19 +167,56 @@ namespace WaveletFusionLib
                 }
             }
 
-            // upper right quarter
-           // result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, 0, (width >> 1 - 1), (height >> 1 - 1), width);
+            // Matrix decomposition
+            // res1 res2
+            // res3 res4
+            double[,] res2 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, 0, width >> 1, height >> 1, width);
+            double[,] res3 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, height >> 1, 0, height, width >> 1);
+            double[,] res4 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, height>>1, width >> 1, height, width);
             
-            // down half
-            // result = GaussianMeanFusion.Fusion(bmp1, bmp2, height, width, (height >> 1), (width >> 1 - 1), (height >> 1 - 1), width);
-
-           // int rowLimit = height >> 1;
-            //int colLimit = width >> 1;
-            for (int i = 0; i < height; ++i)
+            // res1 is calculated in-place here
+            int rowStart = 0;
+            int colStart = 0;
+            int rowLimit = height >> 1;
+            int colLimit = width >> 1;            
+            for (int i = rowStart; i < rowLimit; ++i)
             {
-                for (int j = 0; j < width; ++j)
+                for (int j = colStart; j < colLimit; ++j)
                 {
                     result[i,j] = ( bmp1[i, j] + bmp2[i,j] ) / 2;
+                }
+            }
+
+            // res2
+            rowStart = 0; rowLimit = height >> 1;
+            colStart = width >> 1; colLimit = width;
+            for (int i = rowStart, x = 0; i < rowLimit; ++i, ++x)
+            {
+                for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
+                {
+                    result[i, j] = res2[x, y];
+                }
+            }
+
+            // res3
+            rowStart = height >> 1; rowLimit = height;
+            colStart = 0; colLimit = width >> 1;
+            for (int i = rowStart, x = 0; i < rowLimit; ++i, ++x)
+            {
+                for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
+                {
+                    result[i, j] = res3[x, y];
+                }
+            }
+
+            // res4
+            rowStart = height >> 1; rowLimit = height;
+            colStart = width >> 1; colLimit = width;
+            for (int i = rowStart, x = 0; i < rowLimit; ++i, ++x)
+            {
+                for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
+                {
+                    result[i, j] = res4[x, y];
                 }
             }
 

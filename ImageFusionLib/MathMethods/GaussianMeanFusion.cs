@@ -8,13 +8,13 @@ namespace ImageFusionLib.MathMethods
 {
     /// <summary>
     /// Gaussian weighted mean implementation for 2d matrix and size 5 kernel.
-    /// The kernel is the given by default by Matlab.
-    ///     0.0019    0.0201    0.0439    0.0201    0.0019
-    ///     0.0201    0.2096    0.4578    0.2096    0.0201
-    ///     0.0439    0.4578    1.0000    0.4578    0.0439
-    ///     0.0201    0.2096    0.4578    0.2096    0.0201
-    ///     0.0019    0.0201    0.0439    0.0201    0.0019
     /// </summary>
+    /// The kernel is the given by default by Matlab.
+    /// 0.0019    0.0201    0.0439    0.0201    0.0019
+    /// 0.0201    0.2096    0.4578    0.2096    0.0201
+    /// 0.0439    0.4578    1.0000    0.4578    0.0439
+    /// 0.0201    0.2096    0.4578    0.2096    0.0201
+    /// 0.0019    0.0201    0.0439    0.0201    0.0019
     class GaussianMeanFusion
     {
         // Only the first quarter, since it is a symmetrical matrix.
@@ -71,10 +71,10 @@ namespace ImageFusionLib.MathMethods
         /// <param name="endRow">End row to fuse (exclusive)</param>
         /// <param name="endCol">End col to fuse (exclusive)</param>
         /// <returns>double[,]</returns>
-        public static double[,] Fusion(double[,] data1, double[,] data2, int rows, int cols,
+        public static double[,] Fusion(double[,] data1, double[,] data2, int height, int width,
                                         int startRow, int startCol, int endRow, int endCol)
         {
-            double[,] result = new double[rows, cols];
+            double[,] result = new double[height, width];
             int neighboors, x, y;
             double sum, w;
 
@@ -100,7 +100,7 @@ namespace ImageFusionLib.MathMethods
                         }
                     }
 
-                    result[i, j] = sum / (2 * WeightsSum(neighboors));
+                    result[i - startRow, j - startCol] = sum / (2 * WeightsSum(neighboors));
                 }
             }
 
