@@ -21,7 +21,7 @@ namespace WaveletFusion.Helpers
             {
                 src[x] ^= 255;
             });
-            var final = result.ToBitmapSource();
+            var final = result.ToImageSource();
             result.Dispose();
             return final;
         }
@@ -38,7 +38,7 @@ namespace WaveletFusion.Helpers
             if (result.Format == PixelFormats.Bgr32 || result.Format == PixelFormats.Indexed8)
                 SetGammaGray8(input,result, factor);
 
-            return result.ToBitmapSource();
+            return result.ToImageSource();
         }
 
         private unsafe static void SetGammaGray8(ImagePtr source,ImagePtr result, double factor)
@@ -70,7 +70,7 @@ namespace WaveletFusion.Helpers
             var result = new ImagePtr(input.Width, input.Height, input.Format);
             if (result.Format == PixelFormats.Bgr32 )
                 SetSharpenBGR2(input, result, strength);
-            var final = result.ToBitmapSource();
+            var final = result.ToImageSource();
             final.Freeze();
             result.Dispose();
             return final;
@@ -229,7 +229,7 @@ namespace WaveletFusion.Helpers
                result= EmphasizeBGR(input);
             if(input.Format == PixelFormats.Gray8)
                 result = EmphasizeGray(input);
-            var final = result.ToBitmapSource();
+            var final = result.ToImageSource();
             final.Freeze();
             result.Dispose();
             return final;
@@ -471,7 +471,7 @@ namespace WaveletFusion.Helpers
                 });
             }
            
-            return input.ToBitmapSource();
+            return input.ToImageSource();
         }
 
         private static bool IsInEllipse(int x, int y, Rect rect)
@@ -513,7 +513,7 @@ namespace WaveletFusion.Helpers
                     }
                 });
             }
-            return input.ToBitmapSource();
+            return input.ToImageSource();
         }
 
         public static BitmapSource DrawRegion(this ImageSource source, Rect rect)
@@ -521,7 +521,7 @@ namespace WaveletFusion.Helpers
             var input = ImagePtr.FromBitmap((BitmapSource)source);
             var result = new ImagePtr((int)rect.Width, (int)rect.Height, PixelFormats.Bgr32);
             input.Copy(new Int32Rect((int)rect.Left, (int)rect.Top, (int)rect.Width, (int)rect.Height), result);
-            return result.ToBitmapSource();
+            return result.ToImageSource();
         }
 
         private static bool IsInRectangle(int x, int y, Rect rect)
@@ -544,7 +544,7 @@ namespace WaveletFusion.Helpers
                 WindowsLevelGray8(input, window,level);
             if (result.Format == PixelFormats.Gray16)
                 WindowsLevelGray16(input, window, level);
-            return input.ToBitmapSource();
+            return input.ToImageSource();
         }
 
         private unsafe static void WindowsLevelGray8(ImagePtr source, double window, double level)

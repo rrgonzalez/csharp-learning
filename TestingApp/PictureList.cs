@@ -114,5 +114,13 @@ namespace TestingApp
 
             return pictureList[CurrentIndex];
         }
+
+        /// <summary>
+        /// Reverse the list images.
+        /// </summary>
+        public void Reverse()
+        {
+            Array.Reverse(pictureList);
+        }
     }
 }

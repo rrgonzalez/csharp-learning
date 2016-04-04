@@ -49,6 +49,8 @@ namespace WaveletFusionLib
 
             resultImage = ApplyWaveletTransform(resultImage, false);
 
+
+
             return resultImage;
         }
 
@@ -83,11 +85,11 @@ namespace WaveletFusionLib
                     for (int j = 0, y = 128; j < image.Width; ++j, ++y)
                         resData[x * result.Width + y] = data[i * image.Width + j];
 
-                objectImage = result.ToBitmapSource();
+                objectImage = result.ToImageSource();
                 return ;
             }
 
-            objectImage = image.ToBitmapSource();
+            objectImage = image.ToImageSource();
         }
 
         /// <summary>
@@ -137,7 +139,8 @@ namespace WaveletFusionLib
                 }
             }
 
-            return imgPtr.ToBitmapSource();
+            //IFilter f = new PaletteFilter("");
+            return imgPtr.ToImageSource();
         }
 
         /// <summary>
@@ -230,7 +233,7 @@ namespace WaveletFusionLib
                 }
             }
 
-            return res.ToBitmapSource();
+            return res.ToImageSource();
         }
     }
 }

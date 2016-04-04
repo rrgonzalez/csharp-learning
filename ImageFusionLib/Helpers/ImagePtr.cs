@@ -161,10 +161,7 @@ namespace WaveletFusion.Helpers
             return new ImagePtr(data, width, height, pixelAsShort);
         }
 
-        public  BitmapSource ToBitmapSource()
-        {
-           return BitmapSource.Create(Width, Height, 96, 96,Format, null, Data, DataSize, Stride);
-        }
+        
 
         public static byte[] GetPixels(BitmapSource source)
         {

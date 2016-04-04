@@ -44,7 +44,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\BitmapSourceBuilder.cs" />
     <Compile Include="Helpers\ExternalMethod.cs" />
+    <Compile Include="Helpers\Filter.cs" />
+    <Compile Include="Helpers\IFilter.cs" />
+    <Compile Include="Helpers\PaletteFilter.cs" />
     <Compile Include="MathMethods\GaussianMeanFusion.cs" />
     <Compile Include="MathMethods\ScaleSupport.cs" />
     <Compile Include="WaveletFusion.cs" />

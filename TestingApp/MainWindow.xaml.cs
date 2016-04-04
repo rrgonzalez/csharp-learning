@@ -28,6 +28,8 @@ namespace TestingApp
         private PictureList targetSeries = null;
         private PictureList objectSeries = null;
         private PictureList resultSeries = null;
+
+        private bool[] fused = null;
         //private PictureList playingSeries = null;
 
         public MainWindow()
@@ -79,6 +81,7 @@ namespace TestingApp
             }
 
             objectSeries = new PictureList(folderBrowserDlg.SelectedPath);
+            objectSeries.Reverse();
             //playingSeries = objectSeries;
 
             if (scrollPlayingSeries.Value != 0)
@@ -87,6 +90,7 @@ namespace TestingApp
                 scrollPlayingSeries.Value = 0;
 
             imageRenderObject.Source = objectSeries.CurrentImage();
+
             scrollPlayingSeries.Maximum = objectSeries.Size - 1;
         }
 
