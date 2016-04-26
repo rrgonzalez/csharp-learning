@@ -31,6 +31,22 @@ namespace TestingApp
             }
         }
 
+        public PictureList(int size)
+        {
+            this.pictureList = new BitmapSource[size];
+            Size = size;
+            _currentIndex = 0;
+            CurrentIndex = 0;
+        }
+
+        public void InsertPicture(int position, BitmapSource image)
+        {
+            if (position < 0 || position >= Size)
+                return;
+
+            pictureList[position] = image;
+        }
+
         public PictureList(BitmapSource[] pictureList)
         {
             this.pictureList = pictureList;

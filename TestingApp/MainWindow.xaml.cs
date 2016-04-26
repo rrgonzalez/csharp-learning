@@ -61,6 +61,11 @@ namespace TestingApp
             targetSeries = new PictureList(folderBrowserDlg.SelectedPath);  
             //playingSeries = targetSeries;
 
+            fused = new bool[targetSeries.Size];
+            resultSeries = new PictureList(fused.Length);
+            for (int i = 0; i < fused.Length; ++i)
+                fused[i] = false;
+
             if (scrollPlayingSeries.Value != 0)
                 targetSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
             else
@@ -84,6 +89,11 @@ namespace TestingApp
             objectSeries.Reverse();
             //playingSeries = objectSeries;
 
+            fused = new bool[objectSeries.Size];
+            resultSeries = new PictureList(fused.Length);
+            for (int i = 0; i < fused.Length; ++i)
+                fused[i] = false;
+
             if (scrollPlayingSeries.Value != 0)
                 objectSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
             else
@@ -98,6 +108,7 @@ namespace TestingApp
         {
             targetSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
             objectSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
+            resultSeries.CurrentIndex = (int)scrollPlayingSeries.Value;
             imageRender.Source = targetSeries.CurrentImage();
             imageRenderObject.Source = objectSeries.CurrentImage();
         }
@@ -106,6 +117,12 @@ namespace TestingApp
         {
             if (targetSeries == null || objectSeries == null || targetSeries.Size != objectSeries.Size )
                 return;
+
+            if( fused[targetSeries.CurrentIndex] )
+            {
+                imageRender.Source = resultSeries.CurrentImage();
+                return;
+            }
 
             int N = targetSeries.Size;
             BitmapSource aux;
@@ -117,7 +134,11 @@ namespace TestingApp
             //    bmpArray[i] = aux;
             //}
 
-            aux = WaveletFusionLib.WaveletFusion.FusionImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+            aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+
+            resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
+            fused[targetSeries.CurrentIndex] = true;
+
             imageRender.Source = aux;
 
             //playingSeries = resultSeries = new PictureList(bmpArray);
@@ -140,6 +161,60 @@ namespace TestingApp
             memoryStream.Close();
 
             return bImg;
+        }
+
+        private void buttonPrev_Click(object sender, RoutedEventArgs e)
+        {
+            if (targetSeries.CurrentIndex <= 0 )
+                return;
+
+            --scrollPlayingSeries.Value;
+
+            //--targetSeries.CurrentIndex;
+            //--objectSeries.CurrentIndex;
+            //--resultSeries.CurrentIndex;
+
+            int index = resultSeries.CurrentIndex;
+            if (fused[index])
+                imageRender.Source = resultSeries.CurrentImage();
+            else
+            {
+                BitmapSource aux;
+
+                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+
+                resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
+                fused[targetSeries.CurrentIndex] = true;
+
+                imageRender.Source = aux;
+            }
+        }
+
+        private void buttonNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (targetSeries.CurrentIndex + 1 >= targetSeries.Size)
+                return ;
+
+            ++scrollPlayingSeries.Value;
+
+            //++targetSeries.CurrentIndex;
+            //++objectSeries.CurrentIndex;
+            //++resultSeries.CurrentIndex;
+
+            int index = resultSeries.CurrentIndex;
+            if (fused[index])
+                imageRender.Source = resultSeries.CurrentImage();
+            else
+            {
+                BitmapSource aux;
+
+                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+
+                resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
+                fused[targetSeries.CurrentIndex] = true;
+
+                imageRender.Source = aux;
+            }
         }
     }
 }

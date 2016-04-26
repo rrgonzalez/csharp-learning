@@ -18,7 +18,7 @@ namespace WaveletFusionLib
         private static BitmapSource objectImage;
         private static BitmapSource resultImage;
 
-        public static BitmapSource FusionImages(BitmapSource pTargetImage, BitmapSource pObjectImage) {
+        public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage) {
             targetImage = pTargetImage;
             objectImage = pObjectImage;
             bool swapped = false;
@@ -48,8 +48,6 @@ namespace WaveletFusionLib
             resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
             resultImage = ApplyWaveletTransform(resultImage, false);
-
-
 
             return resultImage;
         }
@@ -181,7 +179,8 @@ namespace WaveletFusionLib
             int rowStart = 0;
             int colStart = 0;
             int rowLimit = height >> 1;
-            int colLimit = width >> 1;            
+            int colLimit = width >> 1;
+
             for (int i = rowStart; i < rowLimit; ++i)
             {
                 for (int j = colStart; j < colLimit; ++j)

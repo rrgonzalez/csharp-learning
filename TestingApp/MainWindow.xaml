@@ -20,7 +20,8 @@
             <Button Content="Load Serie 1" Name="buttonLoadSerie1" Height="25" Width="100" Margin="5" Click="buttonLoadTargetSeries_Click" />
             <Button Content="Load Serie 2" Name="buttonLoadSerie2" Height="25" Width="100" Margin="5" Click="buttonLoadObjectSeries_Click" />
             <Button Content="Fuse" Name="buttonFuse" Height="25" Width="85" Margin="5" Click="buttonFuse_Click" />
-            
+            <Button Content="Previous" Name="buttonPrev" Height="25" Width="85" Margin="5" Click="buttonPrev_Click" />
+            <Button Content="Next" Name="buttonNext" Height="25" Width="85" Margin="5" Click="buttonNext_Click" />
         </StackPanel>
 
         <Image Grid.Row="1" Grid.Column="0" Margin="10" Name="imageRender"/>
