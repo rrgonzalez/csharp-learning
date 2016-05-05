@@ -8,17 +8,24 @@ using System.Windows.Media;
 using WaveletFusion.Helpers;
 using ImageFusionLib.MathMethods;
 
-using WaveletFusion.Helpers;
-
 namespace WaveletFusionLib
 {
     public static class WaveletFusion
     {
-        private static BitmapSource targetImage;
-        private static BitmapSource objectImage;
-        private static BitmapSource resultImage;
+        private static ImagePtr targetImage;
+        private static ImagePtr objectImage;
+        private static ImagePtr resultImage;
 
-        public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage) {
+        public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage, string paletteFilter)
+        {
+            ImagePtr imgPtr1 = ImagePtr.FromBitmap(pTargetImage);
+            ImagePtr imgPtr2 = ImagePtr.FromBitmap(pObjectImage);
+
+            return FuseImages(imgPtr1, imgPtr2, paletteFilter).ToImageSource();
+        }
+
+        public static ImagePtr FuseImages(ImagePtr pTargetImage, ImagePtr pObjectImage, string paletteFilter)
+        {
             targetImage = pTargetImage;
             objectImage = pObjectImage;
             bool swapped = false;
@@ -26,28 +33,35 @@ namespace WaveletFusionLib
             if (targetImage.Width < objectImage.Width)
             {
                 swapped = true;
-                BitmapSource temp = targetImage;
+                ImagePtr temp = targetImage;
                 targetImage = objectImage;
                 objectImage = temp;
             }
 
             ApplyCoregister(ref targetImage, ref objectImage);
+            ImagePtr mask = ImagePtr.FromIntPtr(objectImage.Data, objectImage.Width, 
+                objectImage.Height, objectImage.Format, true); // used for pseudo-coloring
 
             if (swapped)
             {
-                BitmapSource temp = targetImage;
+                ImagePtr temp = targetImage;
                 targetImage = objectImage;
                 objectImage = temp;
             }
 
+            PaletteFilter pf = new PaletteFilter(paletteFilter);
+            objectImage = pf.Apply(objectImage);
+
             targetImage = ApplyWaveletTransform(targetImage, true);
-            //resultImage = targetImage;
             objectImage = ApplyWaveletTransform(objectImage, true);
-            //resultImage = objectImage;
 
             resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
             resultImage = ApplyWaveletTransform(resultImage, false);
+
+            // Pseudo-coloring
+            // FusionPaletteFilter fpf = new FusionPaletteFilter("LUT/Hotiron.lut");
+            // resultImage = fpf.Apply(resultImage, mask);
 
             return resultImage;
         }
@@ -56,10 +70,10 @@ namespace WaveletFusionLib
         /// Coregister the target and object image attributes of the class. 
         /// The transformations are applied directly to the objectImage attribute. 
         /// </summary>
-        private static unsafe void ApplyCoregister(ref BitmapSource targetImage, ref BitmapSource objectImage)
+        private static unsafe void ApplyCoregister(ref ImagePtr targetImage, ref ImagePtr objectImage)
         {
-            double xFactor = targetImage.PixelWidth / objectImage.PixelWidth;
-            double yFactor = targetImage.PixelHeight / objectImage.PixelHeight;
+            double xFactor = targetImage.Width / objectImage.Width;
+            double yFactor = targetImage.Height / objectImage.Height;
 
             bool flag = false;
             if( xFactor == 4 ) {
@@ -68,8 +82,7 @@ namespace WaveletFusionLib
                 flag = true;
             }
 
-            ImagePtr image = ImagePtr.FromBitmap(objectImage);
-            image = image.Scale(xFactor, yFactor, ScaleMode.HighQuality);
+            ImagePtr image = objectImage.Scale(xFactor, yFactor, ScaleMode.HighQuality);
 
             if( flag ) {
                 byte* data = (byte*)image.Data.ToPointer();
@@ -83,97 +96,210 @@ namespace WaveletFusionLib
                     for (int j = 0, y = 128; j < image.Width; ++j, ++y)
                         resData[x * result.Width + y] = data[i * image.Width + j];
 
-                objectImage = result.ToImageSource();
+                objectImage = result;
                 return ;
             }
 
-            objectImage = image.ToImageSource();
+            objectImage = image;
         }
 
         /// <summary>
         /// Transform to the Wavelet domain the data of the given image.
         /// </summary>
         /// <param name="forward">true to apply the Wavelet transform, false to apply the Inverse Wavelet Transform.</param>
-        public static unsafe BitmapSource ApplyWaveletTransform(BitmapSource bitmap, bool forward)
+        public static unsafe ImagePtr ApplyWaveletTransform(ImagePtr bitmap, bool forward)
         {
-            ImagePtr imgPtr = ImagePtr.FromBitmap(bitmap);
-            byte* data = (byte*)imgPtr.Data.ToPointer();
+            ImagePtr imgPtr = bitmap;
 
-            int width = imgPtr.Width;
-            int height = imgPtr.Height;
-
-            //for (int i = 0; i < height; ++i)
-            //{
-            //    for (int j = 0; j < width; ++j)
-            //    {
-            //        data[i * width + j] = ((byte)(255 - data[i * width + j]));
-            //    }
-            //}
-
-            double[,] pixels = new double[height, width];
-
-            for (int i = 0; i < height; i++)
+            if (bitmap.Format == PixelFormats.Bgr32)
             {
-                for (int j = 0; j < width; j++)
+                Bgr32* data = (Bgr32*)imgPtr.Data;
+
+                int width = imgPtr.Width;
+                int height = imgPtr.Height;
+
+                double[,] red = new double[height, width];
+                double[,] green = new double[height, width];
+                double[,] blue = new double[height, width];
+                double[,] extra = new double[height, width];
+
+                for (int i = 0; i < height; i++)
                 {
-                    pixels[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j]);
+                    for (int j = 0; j < width; j++)
+                    {
+                        red[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].R);
+                        green[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].G);
+                        blue[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].B);
+                        extra[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].S);
+                    }
                 }
-            }
 
-            if (forward)
-            {
-                DiscreteWaveletTransform.WaveletTransform(pixels);
-            }
-            else
-            {
-                DiscreteWaveletTransform.InverseWaveletTransform(pixels);
-            }
-
-            for (int i = 0; i < height; i++)
-            {
-                for (int j = 0; j < width; j++)
+                if (forward)
                 {
-                    data[i * width + j] = (byte)Utils.Normalize(-1, 1, 0, 255, pixels[i, j]);
+                    DiscreteWaveletTransform.WaveletTransform(red);
+                    DiscreteWaveletTransform.WaveletTransform(green);
+                    DiscreteWaveletTransform.WaveletTransform(blue);
+                    DiscreteWaveletTransform.WaveletTransform(extra);
                 }
+                else
+                {
+                    DiscreteWaveletTransform.InverseWaveletTransform(red);
+                    DiscreteWaveletTransform.InverseWaveletTransform(green);
+                    DiscreteWaveletTransform.InverseWaveletTransform(blue);
+                    DiscreteWaveletTransform.InverseWaveletTransform(extra);
+                }
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        data[i * width + j].R = (byte)Utils.Normalize(-1, 1, 0, 255, red[i, j]);
+                        data[i * width + j].G = (byte)Utils.Normalize(-1, 1, 0, 255, green[i, j]);
+                        data[i * width + j].B = (byte)Utils.Normalize(-1, 1, 0, 255, blue[i, j]);
+                        data[i * width + j].S = (byte)Utils.Normalize(-1, 1, 0, 255, extra[i, j]);
+                    }
+                }
+
+                return imgPtr;
+            }
+            else if (bitmap.Format == PixelFormats.Bgr24 || bitmap.Format == PixelFormats.Rgb24)
+            {
+                Bgr24* data = (Bgr24*)imgPtr.Data;
+
+                int width = imgPtr.Width;
+                int height = imgPtr.Height;
+
+                double[,] red = new double[height, width];
+                double[,] green = new double[height, width];
+                double[,] blue = new double[height, width];
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        red[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].R);
+                        green[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].G);
+                        blue[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j].B);
+                    }
+                }
+
+                if (forward)
+                {
+                    DiscreteWaveletTransform.WaveletTransform(red);
+                    DiscreteWaveletTransform.WaveletTransform(green);
+                    DiscreteWaveletTransform.WaveletTransform(blue);
+                }
+                else
+                {
+                    DiscreteWaveletTransform.InverseWaveletTransform(red);
+                    DiscreteWaveletTransform.InverseWaveletTransform(green);
+                    DiscreteWaveletTransform.InverseWaveletTransform(blue);
+                }
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        data[i * width + j].R = (byte)Utils.Normalize(-1, 1, 0, 255, red[i, j]);
+                        data[i * width + j].G = (byte)Utils.Normalize(-1, 1, 0, 255, green[i, j]);
+                        data[i * width + j].B = (byte)Utils.Normalize(-1, 1, 0, 255, blue[i, j]);
+                    }
+                }
+
+                return imgPtr;
+            }
+            else if(bitmap.Format == PixelFormats.Gray8)
+            {
+                byte* data = (byte*)imgPtr.Data.ToPointer();
+
+                int width = imgPtr.Width;
+                int height = imgPtr.Height;
+
+                double[,] pixels = new double[height, width];
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        pixels[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j]);
+                    }
+                }
+
+                if (forward)
+                {
+                    DiscreteWaveletTransform.WaveletTransform(pixels);
+                }
+                else
+                {
+                    DiscreteWaveletTransform.InverseWaveletTransform(pixels);
+                }
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        data[i * width + j] = (byte)Utils.Normalize(-1, 1, 0, 255, pixels[i, j]);
+                    }
+                }
+
+                return imgPtr;
             }
 
-            //IFilter f = new PaletteFilter("");
-            return imgPtr.ToImageSource();
+            return null;
         }
 
         /// <summary>
         /// Applies the fusion rule to the coefficients of the images. 
         /// The result is saved in the attribute resultImage.
         /// </summary>
-        public static unsafe BitmapSource ApplyCoefficientFusion(BitmapSource bitmap1, BitmapSource bitmap2)
+        public static unsafe ImagePtr ApplyCoefficientFusion(ImagePtr targetImage, ImagePtr objectImage)
         {
-            var imgPtr1 = ImagePtr.FromBitmap(bitmap1);
-            byte* data1 = (byte*)imgPtr1.Data.ToPointer();
-            int width = imgPtr1.Width;
-            int height = imgPtr1.Height;
+            var imgPtrTarget = targetImage;
+            byte* targetData = (byte*)imgPtrTarget.Data.ToPointer();
+            int width = imgPtrTarget.Width;
+            int height = imgPtrTarget.Height;            
 
-            var imgPtr2 = ImagePtr.FromBitmap(bitmap2);
-            byte* data2 = (byte*)imgPtr2.Data.ToPointer();
+            var imgPtrObject = objectImage;
 
-            double[,] bmp1 = new double[height, width];
-            double[,] bmp2 = new double[height, width];
-            double[,] result = new double[height, width];
+            Bgr24* objectData = (Bgr24*)imgPtrObject.Data;
+            //byte* objectData = (byte*)imgPtrObject.Data.ToPointer();
+
+            double[,] targetBmp = new double[height, width];
+
+            double[,] objectBmpRed = new double[height, width];
+            double[,] objectBmpGreen = new double[height, width];
+            double[,] objectBmpBlue = new double[height, width];
+
+            double[,] resultBmpRed = new double[height, width];
+            double[,] resultBmpGreen = new double[height, width];
+            double[,] resultBmpBlue = new double[height, width];
             
             for (int i = 0; i < height; ++i)
             {
                 for (int j = 0; j < width; ++j)
                 {
-                    bmp1[i, j] = data1[i * width + j];
-                    bmp2[i, j] = data2[i * width + j];
+                    targetBmp[i, j] = targetData[i * width + j];
+
+                    objectBmpRed[i, j] = objectData[i * width + j].R;
+                    objectBmpGreen[i, j] = objectData[i * width + j].G;
+                    objectBmpBlue[i, j] = objectData[i * width + j].B;
                 }
             }
 
             // Matrix decomposition
             // res1 res2
             // res3 res4
-            double[,] res2 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, 0, width >> 1, height >> 1, width);
-            double[,] res3 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, height >> 1, 0, height, width >> 1);
-            double[,] res4 = GaussianMeanFusion.Fusion(bmp1, bmp2, height >> 1, width >> 1, height>>1, width >> 1, height, width);
+            double[,] res2Red = GaussianMeanFusion.Fusion(targetBmp, objectBmpRed, height >> 1, width >> 1, 0, width >> 1, height >> 1, width);
+            double[,] res3Red = GaussianMeanFusion.Fusion(targetBmp, objectBmpRed, height >> 1, width >> 1, height >> 1, 0, height, width >> 1);
+            double[,] res4Red = GaussianMeanFusion.Fusion(targetBmp, objectBmpRed, height >> 1, width >> 1, height>>1, width >> 1, height, width);
+
+            double[,] res2Green = GaussianMeanFusion.Fusion(targetBmp, objectBmpGreen, height >> 1, width >> 1, 0, width >> 1, height >> 1, width);
+            double[,] res3Green = GaussianMeanFusion.Fusion(targetBmp, objectBmpGreen, height >> 1, width >> 1, height >> 1, 0, height, width >> 1);
+            double[,] res4Green = GaussianMeanFusion.Fusion(targetBmp, objectBmpGreen, height >> 1, width >> 1, height >> 1, width >> 1, height, width);
+
+            double[,] res2Blue = GaussianMeanFusion.Fusion(targetBmp, objectBmpBlue, height >> 1, width >> 1, 0, width >> 1, height >> 1, width);
+            double[,] res3Blue = GaussianMeanFusion.Fusion(targetBmp, objectBmpBlue, height >> 1, width >> 1, height >> 1, 0, height, width >> 1);
+            double[,] res4Blue = GaussianMeanFusion.Fusion(targetBmp, objectBmpBlue, height >> 1, width >> 1, height >> 1, width >> 1, height, width);
             
             // res1 is calculated in-place here
             int rowStart = 0;
@@ -185,7 +311,9 @@ namespace WaveletFusionLib
             {
                 for (int j = colStart; j < colLimit; ++j)
                 {
-                    result[i,j] = ( bmp1[i, j] + bmp2[i,j] ) / 2;
+                    resultBmpRed[i,j] = ( targetBmp[i, j] + objectBmpRed[i,j] ) / 2;
+                    resultBmpGreen[i, j] = (targetBmp[i, j] + objectBmpGreen[i, j]) / 2;
+                    resultBmpBlue[i, j] = (targetBmp[i, j] + objectBmpBlue[i, j]) / 2;
                 }
             }
 
@@ -196,7 +324,9 @@ namespace WaveletFusionLib
             {
                 for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
                 {
-                    result[i, j] = res2[x, y];
+                    resultBmpRed[i, j] = res2Red[x, y];
+                    resultBmpGreen[i, j] = res2Green[x, y];
+                    resultBmpBlue[i, j] = res2Blue[x, y];
                 }
             }
 
@@ -207,7 +337,9 @@ namespace WaveletFusionLib
             {
                 for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
                 {
-                    result[i, j] = res3[x, y];
+                    resultBmpRed[i, j] = res3Red[x, y];
+                    resultBmpGreen[i, j] = res3Green[x, y];
+                    resultBmpBlue[i, j] = res3Blue[x, y];
                 }
             }
 
@@ -218,21 +350,25 @@ namespace WaveletFusionLib
             {
                 for (int j = colStart, y = 0; j < colLimit; ++j, ++y)
                 {
-                    result[i, j] = res4[x, y];
+                    resultBmpRed[i, j] = res4Red[x, y];
+                    resultBmpGreen[i, j] = res4Green[x, y];
+                    resultBmpBlue[i, j] = res4Blue[x, y];
                 }
             }
 
-            ImagePtr res = new ImagePtr(width, height, PixelFormats.Gray8);            
-            byte* resData = (byte*)res.Data.ToPointer();
+            ImagePtr res = new ImagePtr(width, height, PixelFormats.Bgr24);
+            Bgr24* resData = (Bgr24*)res.Data;
             for (int i = 0; i < height; ++i)
             {
                 for (int j = 0; j < width; ++j)
                 {
-                    resData[i * width + j] = (byte)result[i, j];
+                    resData[i * width + j].B = (byte)resultBmpRed[i, j];
+                    resData[i * width + j].G = (byte)resultBmpGreen[i, j];
+                    resData[i * width + j].R = (byte)resultBmpBlue[i, j];
                 }
             }
 
-            return res.ToImageSource();
+            return res;
         }
     }
 }

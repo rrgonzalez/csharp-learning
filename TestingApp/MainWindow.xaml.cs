@@ -29,23 +29,14 @@ namespace TestingApp
         private PictureList objectSeries = null;
         private PictureList resultSeries = null;
 
+        private const string paletteFilter = "LUT/Rainramp.lut";
+
         private bool[] fused = null;
         //private PictureList playingSeries = null;
 
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void buttonApplyDWT_Click(object sender, RoutedEventArgs e)
-        {
-            //WaveletFusionLib.WaveletFusion.FusionImages(targetImage, targetImage);
-            //imageRender.Source = WaveletFusionLib.WaveletFusion.targetImage;
-        }
-
-        private void buttonApplyIDWT_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void buttonLoadTargetSeries_Click(object sender, RoutedEventArgs e)
@@ -134,7 +125,7 @@ namespace TestingApp
             //    bmpArray[i] = aux;
             //}
 
-            aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+            aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage(), paletteFilter);
 
             resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
             fused[targetSeries.CurrentIndex] = true;
@@ -181,7 +172,7 @@ namespace TestingApp
             {
                 BitmapSource aux;
 
-                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage(), paletteFilter);
 
                 resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
                 fused[targetSeries.CurrentIndex] = true;
@@ -208,7 +199,7 @@ namespace TestingApp
             {
                 BitmapSource aux;
 
-                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage());
+                aux = WaveletFusionLib.WaveletFusion.FuseImages(targetSeries.CurrentImage(), objectSeries.CurrentImage(), paletteFilter);
 
                 resultSeries.InsertPicture(targetSeries.CurrentIndex, aux);
                 fused[targetSeries.CurrentIndex] = true;

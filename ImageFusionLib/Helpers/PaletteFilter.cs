@@ -9,9 +9,9 @@ namespace WaveletFusion.Helpers
     {
         #region Fields 
 
-        private readonly ushort[] _r;
-        private readonly ushort[] _g;
-        private readonly ushort[] _b;
+        protected readonly ushort[] _r;
+        protected readonly ushort[] _g;
+        protected readonly ushort[] _b;
         private bool _fromLut = false;
 
         #endregion
@@ -20,7 +20,9 @@ namespace WaveletFusion.Helpers
 
         public PaletteFilter(string lutFile)
         {
-            _r = _g = _b = new ushort[256];
+            _r = new ushort[256];
+            _g = new ushort[256];
+            _b = new ushort[256];
             _fromLut = true;
             LoadFromLUTFile(lutFile);
         }
@@ -83,9 +85,9 @@ namespace WaveletFusion.Helpers
                     int xy = y + j;
                     int index = src[xy];
 
-                    dst[xy].R = (byte)(_r[index] >> 8);
-                    dst[xy].G = (byte)(_g[index]>>8);
-                    dst[xy].B = (byte)(_b[index]>>8);
+                    dst[xy].R = (byte)(_r[index]);
+                    dst[xy].G = (byte)(_g[index]);
+                    dst[xy].B = (byte)(_b[index]);
                 }
 
             });

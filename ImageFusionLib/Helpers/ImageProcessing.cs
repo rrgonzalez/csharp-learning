@@ -861,4 +861,63 @@ namespace WaveletFusion.Helpers
        
     }
 
+    public struct Bgr24
+    {
+        public byte B;
+        public byte G;
+        public byte R;
+
+        public void Set(byte r, byte g, byte b)
+        {
+            R = r;
+            G = g;
+            B = b;
+        }
+
+        public Bgr24(byte b, byte g, byte r)
+            : this()
+        {
+            B = b;
+            G = g;
+            R = r;
+        }
+
+        public static Bgr24 operator -(Bgr24 c1, Bgr24 c2)
+        {
+            int R = c1.R - c2.R;
+            if (R > 255) R = 255;
+            else if (R < 0) R = 0;
+
+            int G = c1.G - c2.G;
+            if (G > 255) G = 255;
+            else if (G < 0) G = 0;
+
+            int B = c1.B - c2.B;
+            if (B > 255) B = 255;
+            else if (B < 0) B = 0;
+
+
+            return new Bgr24((byte)B, (byte)G, (byte)R);
+        }
+
+
+        public static Bgr24 operator +(Bgr24 c1, Bgr24 c2)
+        {
+            int R = (int)Math.Log(c1.R - c2.R);
+            if (R > 255) R = 255;
+            if (R < 0) R = 0;
+
+            int G = (int)Math.Log(c1.G - c2.G);
+            if (G > 255) G = 255;
+            if (G < 0) G = 0;
+
+            int B = (int)Math.Log(c1.B - c2.B);
+            if (B > 255) B = 255;
+            if (B < 0) B = 0;
+
+
+            return new Bgr24((byte)B, (byte)G, (byte)R);
+        }
+
+    }
 }
