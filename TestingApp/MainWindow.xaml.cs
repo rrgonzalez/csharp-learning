@@ -29,7 +29,7 @@ namespace TestingApp
         private PictureList objectSeries = null;
         private PictureList resultSeries = null;
 
-        private const string paletteFilter = "LUT/Rainramp.lut";
+        private const string paletteFilter = "LUT/Hotiron.lut";
 
         private bool[] fused = null;
         //private PictureList playingSeries = null;

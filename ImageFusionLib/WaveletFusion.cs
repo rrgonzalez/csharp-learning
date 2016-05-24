@@ -16,16 +16,24 @@ namespace WaveletFusionLib
         private static ImagePtr objectImage;
         private static ImagePtr resultImage;
 
-        public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage, string paletteFilter)
+        public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage, string paletteFilter = "LUT/Hotiron.lut")
         {
+            if( pTargetImage == null || pObjectImage == null )
+                throw new NullReferenceException("The BitmapSource pointers passed to FuseImages method cannot be null.");
+
             ImagePtr imgPtr1 = ImagePtr.FromBitmap(pTargetImage);
             ImagePtr imgPtr2 = ImagePtr.FromBitmap(pObjectImage);
 
             return FuseImages(imgPtr1, imgPtr2, paletteFilter).ToImageSource();
         }
 
-        public static ImagePtr FuseImages(ImagePtr pTargetImage, ImagePtr pObjectImage, string paletteFilter)
+        public static ImagePtr FuseImages(ImagePtr pTargetImage, ImagePtr pObjectImage, string paletteFilter = "LUT/Hotiron.lut")
         {
+            if (pTargetImage == null || pObjectImage == null)
+                throw new NullReferenceException("The ImagePtr pointers passed to FuseImages method cannot be null.");
+
+            if()
+
             targetImage = pTargetImage;
             objectImage = pObjectImage;
             bool swapped = false;
@@ -107,7 +115,7 @@ namespace WaveletFusionLib
         /// Transform to the Wavelet domain the data of the given image.
         /// </summary>
         /// <param name="forward">true to apply the Wavelet transform, false to apply the Inverse Wavelet Transform.</param>
-        public static unsafe ImagePtr ApplyWaveletTransform(ImagePtr bitmap, bool forward)
+        private static unsafe ImagePtr ApplyWaveletTransform(ImagePtr bitmap, bool forward)
         {
             ImagePtr imgPtr = bitmap;
 
@@ -252,7 +260,7 @@ namespace WaveletFusionLib
         /// Applies the fusion rule to the coefficients of the images. 
         /// The result is saved in the attribute resultImage.
         /// </summary>
-        public static unsafe ImagePtr ApplyCoefficientFusion(ImagePtr targetImage, ImagePtr objectImage)
+        private static unsafe ImagePtr ApplyCoefficientFusion(ImagePtr targetImage, ImagePtr objectImage)
         {
             var imgPtrTarget = targetImage;
             byte* targetData = (byte*)imgPtrTarget.Data.ToPointer();
