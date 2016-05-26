@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using WaveletFusion.Helpers;
 using ImageFusionLib.MathMethods;
+using WaveletFusion.Exceptions;
 
 namespace WaveletFusionLib
 {
@@ -32,8 +33,6 @@ namespace WaveletFusionLib
             if (pTargetImage == null || pObjectImage == null)
                 throw new NullReferenceException("The ImagePtr pointers passed to FuseImages method cannot be null.");
 
-            if()
-
             targetImage = pTargetImage;
             objectImage = pObjectImage;
             bool swapped = false;
@@ -45,6 +44,8 @@ namespace WaveletFusionLib
                 targetImage = objectImage;
                 objectImage = temp;
             }
+
+            checkSize(pTargetImage, pObjectImage);
 
             ApplyCoregister(ref targetImage, ref objectImage);
             ImagePtr mask = ImagePtr.FromIntPtr(objectImage.Data, objectImage.Width, 
@@ -72,6 +73,25 @@ namespace WaveletFusionLib
             // resultImage = fpf.Apply(resultImage, mask);
 
             return resultImage;
+        }
+
+        private static bool checkSize(ImagePtr pTargetImage, ImagePtr pObjectImage)
+        {
+            int widthTargetImg = pTargetImage.Width;
+            int heigthTargetImg = pTargetImage.Height;
+            int widthObjectImg = pObjectImage.Width;
+            int heigthObjectImg = pObjectImage.Height;
+
+            if (widthTargetImg != heigthTargetImg || widthObjectImg != heigthObjectImg)
+                throw new InvalidImageSizeException("Images must be squares.");
+
+            if ((widthTargetImg & (widthTargetImg - 1)) != 0 || (widthObjectImg & (widthObjectImg - 1)) != 0)
+                throw new InvalidImageSizeException("Images size must be a power of two.");
+
+            if (widthTargetImg != 4 * widthObjectImg && widthTargetImg != 2 * widthObjectImg)
+                throw new InvalidImageSizeException("Object image must be half or quarter the size of target image.");
+
+            return true;
         }
 
         /// <summary>
