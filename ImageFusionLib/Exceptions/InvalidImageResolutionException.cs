@@ -9,20 +9,20 @@ using System.Runtime.Serialization;
 namespace WaveletFusion.Exceptions
 {
     [Serializable]
-    class InvalidImageSizeException : Exception
+    class InvalidImageResolutionException : Exception
     {
-        public InvalidImageSizeException ()
+        public InvalidImageResolutionException ()
         {}
 
-        public InvalidImageSizeException (string message) 
+        public InvalidImageResolutionException (string message) 
             : base(message)
         {}
 
-        public InvalidImageSizeException (string message, Exception innerException)
+        public InvalidImageResolutionException (string message, Exception innerException)
             : base (message, innerException)
         {}
 
-        protected InvalidImageSizeException(SerializationInfo info, StreamingContext context)
+        protected InvalidImageResolutionException(SerializationInfo info, StreamingContext context)
             : base (info, context)
         {}
     }

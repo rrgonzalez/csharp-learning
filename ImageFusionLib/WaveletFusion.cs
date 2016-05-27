@@ -17,10 +17,16 @@ namespace WaveletFusionLib
         private static ImagePtr objectImage;
         private static ImagePtr resultImage;
 
+        // Exceptions messages
+        public const string NullImagePtrMessage = "The ImagePtr references passed to FuseImages method cannot be null.";
+        public const string NullBitmapSourceMessage = "The BitmapSource references passed to FuseImages method cannot be null.";
+        public const string InvalidImageSizeMessage = "One image must be 512x512 and the other 256x256";
+        public const string InvalidImageSpectralResolutionMessage = "The pixel format of the images must be Gray8, Gray16, Bgr32, Bgr24 or Rgb24";
+
         public static BitmapSource FuseImages(BitmapSource pTargetImage, BitmapSource pObjectImage, string paletteFilter = "LUT/Hotiron.lut")
         {
             if( pTargetImage == null || pObjectImage == null )
-                throw new NullReferenceException("The BitmapSource pointers passed to FuseImages method cannot be null.");
+                throw new NullReferenceException(NullBitmapSourceMessage);
 
             ImagePtr imgPtr1 = ImagePtr.FromBitmap(pTargetImage);
             ImagePtr imgPtr2 = ImagePtr.FromBitmap(pObjectImage);
@@ -31,7 +37,10 @@ namespace WaveletFusionLib
         public static ImagePtr FuseImages(ImagePtr pTargetImage, ImagePtr pObjectImage, string paletteFilter = "LUT/Hotiron.lut")
         {
             if (pTargetImage == null || pObjectImage == null)
-                throw new NullReferenceException("The ImagePtr pointers passed to FuseImages method cannot be null.");
+                throw new NullReferenceException(NullImagePtrMessage);
+
+            if (!checkSize(pTargetImage, pObjectImage))
+                throw new InvalidImageResolutionException(InvalidImageSizeMessage);
 
             targetImage = pTargetImage;
             objectImage = pObjectImage;
@@ -44,8 +53,6 @@ namespace WaveletFusionLib
                 targetImage = objectImage;
                 objectImage = temp;
             }
-
-            checkSize(pTargetImage, pObjectImage);
 
             ApplyCoregister(ref targetImage, ref objectImage);
             ImagePtr mask = ImagePtr.FromIntPtr(objectImage.Data, objectImage.Width, 
@@ -66,32 +73,7 @@ namespace WaveletFusionLib
 
             resultImage = ApplyCoefficientFusion(targetImage, objectImage);
 
-            resultImage = ApplyWaveletTransform(resultImage, false);
-
-            // Pseudo-coloring
-            // FusionPaletteFilter fpf = new FusionPaletteFilter("LUT/Hotiron.lut");
-            // resultImage = fpf.Apply(resultImage, mask);
-
             return resultImage;
-        }
-
-        private static bool checkSize(ImagePtr pTargetImage, ImagePtr pObjectImage)
-        {
-            int widthTargetImg = pTargetImage.Width;
-            int heigthTargetImg = pTargetImage.Height;
-            int widthObjectImg = pObjectImage.Width;
-            int heigthObjectImg = pObjectImage.Height;
-
-            if (widthTargetImg != heigthTargetImg || widthObjectImg != heigthObjectImg)
-                throw new InvalidImageSizeException("Images must be squares.");
-
-            if ((widthTargetImg & (widthTargetImg - 1)) != 0 || (widthObjectImg & (widthObjectImg - 1)) != 0)
-                throw new InvalidImageSizeException("Images size must be a power of two.");
-
-            if (widthTargetImg != 4 * widthObjectImg && widthTargetImg != 2 * widthObjectImg)
-                throw new InvalidImageSizeException("Object image must be half or quarter the size of target image.");
-
-            return true;
         }
 
         /// <summary>
@@ -236,7 +218,43 @@ namespace WaveletFusionLib
 
                 return imgPtr;
             }
-            else if(bitmap.Format == PixelFormats.Gray8)
+            else if (bitmap.Format == PixelFormats.Gray16)
+            {
+                short* data = (short*)imgPtr.Data.ToPointer();
+
+                int width = imgPtr.Width;
+                int height = imgPtr.Height;
+
+                double[,] pixels = new double[height, width];
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        pixels[i, j] = Utils.Normalize(0, 255, -1, 1, data[i * width + j]);
+                    }
+                }
+
+                if (forward)
+                {
+                    DiscreteWaveletTransform.WaveletTransform(pixels);
+                }
+                else
+                {
+                    DiscreteWaveletTransform.InverseWaveletTransform(pixels);
+                }
+
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        data[i * width + j] = (short)Utils.Normalize(-1, 1, 0, 255, pixels[i, j]);
+                    }
+                }
+
+                return imgPtr;
+            }
+            else if (bitmap.Format == PixelFormats.Gray8)
             {
                 byte* data = (byte*)imgPtr.Data.ToPointer();
 
@@ -272,8 +290,8 @@ namespace WaveletFusionLib
 
                 return imgPtr;
             }
-
-            return null;
+            else
+                throw new InvalidImageResolutionException(InvalidImageSpectralResolutionMessage);
         }
 
         /// <summary>
@@ -397,6 +415,23 @@ namespace WaveletFusionLib
             }
 
             return res;
+        }
+
+        private static bool checkSize(ImagePtr pTargetImage, ImagePtr pObjectImage) {
+            if (pTargetImage.Width != pTargetImage.Height || pObjectImage.Width != pObjectImage.Height)
+                return false;
+
+            if (pTargetImage.Width < pObjectImage.Width)
+            {
+                ImagePtr temp = pTargetImage;
+                pTargetImage = pObjectImage;
+                pObjectImage = temp;
+            }
+
+            if (pTargetImage.Width != 512 || pObjectImage.Width != 256)
+                return false;
+
+            return true;
         }
     }
 }

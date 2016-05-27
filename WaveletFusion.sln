@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveletFusion", "ImageFusio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingApp", "TestingApp\TestingApp.csproj", "{099C35AC-FA67-4EA9-B245-3D8796B95F5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveletFusionTest", "WaveletFusionTest\WaveletFusionTest.csproj", "{E7D50808-7C05-4A1C-A061-2E1DFB1106FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{099C35AC-FA67-4EA9-B245-3D8796B95F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{099C35AC-FA67-4EA9-B245-3D8796B95F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{099C35AC-FA67-4EA9-B245-3D8796B95F5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7D50808-7C05-4A1C-A061-2E1DFB1106FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7D50808-7C05-4A1C-A061-2E1DFB1106FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7D50808-7C05-4A1C-A061-2E1DFB1106FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7D50808-7C05-4A1C-A061-2E1DFB1106FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
