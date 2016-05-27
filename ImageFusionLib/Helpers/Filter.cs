@@ -2,11 +2,14 @@
 using System.Windows.Media;
 //using Calib.Imaging;
 
+using WaveletFusion.Exceptions;
+
 namespace WaveletFusion.Helpers
 {
-
     public abstract class Filter : IFilter
     {
+        public const string InvalidImageSpectralResolutionMessage = "The pixel format of the images must be Gray8, Gray16, Bgr32, Bgr24 or Rgb24";
+
         protected struct RGB24
         {
             public byte R;
@@ -53,7 +56,7 @@ namespace WaveletFusion.Helpers
                 return ApplyRgb48(pixelData);
             }
 
-            throw new NotImplementedException();
+            throw new InvalidImageResolutionException(InvalidImageSpectralResolutionMessage);
         }
 
         #endregion endregion

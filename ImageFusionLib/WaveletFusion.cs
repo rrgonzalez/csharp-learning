@@ -428,7 +428,7 @@ namespace WaveletFusionLib
                 pObjectImage = temp;
             }
 
-            if (pTargetImage.Width != 512 || pObjectImage.Width != 256)
+            if (pTargetImage.Width != 512 || ( pObjectImage.Width != 256 && pObjectImage.Width != 128) )
                 return false;
 
             return true;

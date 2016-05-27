@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace WaveletFusion.Exceptions
 {
     [Serializable]
-    class InvalidImageResolutionException : Exception
+    public class InvalidImageResolutionException : Exception
     {
         public InvalidImageResolutionException ()
         {}
